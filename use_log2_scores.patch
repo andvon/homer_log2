@@ -1,0 +1,60 @@
+--- cpp/Motif2.cpp	2018-04-03 19:29:25.065150652 -0400
++++ cpp/Motif2.cpp	2018-04-03 19:27:42.506247181 -0400
+@@ -2629,7 +2629,7 @@
+ 			for (int j=0;j<alphaSize;j++) {
+ 				if (m[i][j] < MOTIF_PROBABILITY_MINIMUM)
+ 					m[i][j] = MOTIF_PROBABILITY_MINIMUM;
+-				m[i][j] = log(m[i][j]/0.25);
++				m[i][j] = log2(m[i][j] / 0.25);
+ 			}
+ 		}
+ 		logFlag =1;
+@@ -2639,7 +2639,7 @@
+ 	if (logFlag) {
+ 		for (int i=0;i<length;i++) {
+ 			for (int j=0;j<alphaSize;j++) {
+-				m[i][j] = exp(m[i][j])*0.25;
++				m[i][j] = pow(2.0, m[i][j])*0.25;
+ 			}
+ 		}
+ 		logFlag = 0;
+--- cpp/Motif.cpp	2018-04-03 19:29:25.020922091 -0400
++++ cpp/Motif.cpp	2018-04-03 18:41:20.363900060 -0400
+@@ -3215,18 +3215,18 @@
+ void PSSM::logXform() {
+ 	if (state) return;
+ 	adjustvalues();
+-	for (int i=0;i<length;i++) {
+-		for (int j=0;j<size;j++) {
+-			matrix[i][j] = (float)log((double)matrix[i][j]/ backFreq[j]);
++	for (int i = 0; i<length; i++) {
++		for (int j = 0; j<size; j++) {
++			matrix[i][j] = (float)log2((double)matrix[i][j] / backFreq[j]);
+ 		}
+ 	}
+ 	state = 1;
+ }
+ void PSSM::expXform() {
+ 	if (!state) return;
+-	for (int i=0;i<length;i++) {
+-		for (int j=0;j<size;j++) {
+-			matrix[i][j] = (float)exp((double)matrix[i][j])*(backFreq[j]);
++	for (int i = 0; i<length; i++) {
++		for (int j = 0; j<size; j++) {
++			matrix[i][j] = (float)pow(2.0,(double)matrix[i][j])*(backFreq[j]);
+ 			//if (matrix[i][j] != matrix[i][j]) matrix[i][j] = 1.0;
+ 		}
+ 	}
+--- bin/findKnownMotifs.pl	2023-07-05 12:45:01.378121061 -0400
++++ bin/findKnownMotifs.pl	2023-07-05 12:49:27.948117808 -0400
+@@ -149,8 +149,8 @@
+ 	($numTargets,$percentTargets,$numBackground,$percentBackground, $mpvalue) = parseStr2($motifs->[0]->{'str'});
+ 	$percentTargets =~ s/\%//;
+ 	$percentBackground =~ s/\%//;
+-	$totalNumTargets = floor($numTargets/($percentTargets*0.01)+0.5);
+-	$totalNumBackground = floor($numBackground/($percentBackground*0.01)+0.5);
++	$totalNumTargets = floor($numTargets/($percentTargets*0.01+0.0005));
++	$totalNumBackground = floor($numBackground/($percentBackground*0.01+0.0005));
+ } else {
+ 	($totalSeq, $totalTargets, $aAA, $bBB) = parseStr($motifs->[0]->{'str'});
+ }

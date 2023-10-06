@@ -1,0 +1,27 @@
+Bootstrap: docker
+From: alpine:3.18.2
+
+%environment
+export PATH=$PATH:/opt/homer/bin/
+
+%files
+    use_log2_scores.patch /opt/homer/use_log2_scores.patch
+
+%post
+    apk add --no-cache wget perl make gcc g++ zip bash patch R
+	mkdir -p /opt/homer && cd /opt/homer
+    wget http://homer.ucsd.edu/homer/configureHomer.pl
+
+	perl configureHomer.pl -install homer -version v4.9.1
+    patch -p0 < use_log2_scores.patch
+    cd cpp
+    make
+
+
+%labels
+    Author Andrew.VonHandorf@cchmc.org
+    Version v0.0.1
+
+%help
+    This is an initial implementation of a HOMER singularity image with modifications
+    to the log calculations of the motif scores.
