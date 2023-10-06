@@ -1,4 +1,4 @@
-# wrl-homer_log2
+# homer_log2
 
 This repository modifies HOMER (http://homer.ucsd.edu/homer/) to use a log2-based scoring system in place of natural log scoring.
 
